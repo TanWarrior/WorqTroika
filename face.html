@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Face Comparison</title>
+</head>
+<body>
+    <h1>Face Comparison</h1>
+    <form id="upload-form" enctype="multipart/form-data" method="post" action="/compare_faces">
+        <input type="file" id="user-image" name="user_image" accept="image/*" required>
+        <input type="file" id="webcam-image" name="webcam_image" accept="image/*" required>
+        <button type="submit">Compare Faces</button>
+    </form>
+    <div id="result"></div>
+    <script>
+    const form = document.getElementById('upload-form');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        resultDiv.innerHTML = 'Comparing faces...';
+
+        const formData = new FormData(form);
+        try {
+            const response = await fetch('/compare_faces', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.status === 200) {
+                const result = await response.json();
+                displayMatchedAndUnmatchedFaces(result);
+            } else {
+                resultDiv.innerHTML = 'Face comparison failed.';
+            }
+        } catch (error) {
+            console.error(error);
+            resultDiv.innerHTML = 'An error occurred during face comparison.';
+        }
+    });
+
+    function displayMatchedAndUnmatchedFaces(result) {
+        const matchedFaces = result.content.matched_faces;
+        const unmatchedFaces = result.content.unmatched_faces;
+
+        let outputHtml = '';
+
+        if (matchedFaces.length > 0) {
+            outputHtml += '<h2>Matched Faces:</h2>';
+            matchedFaces.forEach((face, index) => {
+                outputHtml += `<p>Matched Face ${index + 1}</p>`;
+                // You can display additional information about matched faces here
+            });
+        }
+
+        if (unmatchedFaces.length > 0) {
+            outputHtml += '<h2>Unmatched Faces:</h2>';
+            unmatchedFaces.forEach((face, index) => {
+                outputHtml += `<p>Unmatched Face ${index + 1}</p>`;
+                // You can display additional information about unmatched faces here
+            });
+        }
+
+        resultDiv.innerHTML = outputHtml;
+    }
+    </script>
+</body>
+</html>

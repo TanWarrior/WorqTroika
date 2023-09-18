@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Generated Quiz</h2>
+<form action="#" method="POST">
+    {% for question in quiz %}
+    <p>{{ question.question }}</p>
+    <ul>
+        {% for choice in question.choices %}
+        <li>
+            <input type="radio" name="question{{ loop.index }}" value="{{ choice }}">
+            {{ choice }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}
